@@ -6,7 +6,12 @@
 #            - ubuntu-toolchain-r-test
 #        packages:
 #            - openvpn
-
+dist: focal
+virt: vm
+group: edge
+arch:
+    - amd64
+    - arm64-graviton
 services:
     - docker
 
