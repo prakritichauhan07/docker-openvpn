@@ -7,11 +7,13 @@
 #        packages:
 #            - openvpn
 dist: focal
-virt: vm
-group: edge
-arch:
-    - amd64
-    - arm64-graviton
+
+jobs:
+  - arch: amd64
+  - group: edge
+    virt: vm
+    arch: arm64-graviton2
+ 
 services:
     - docker
 
@@ -33,6 +35,14 @@ before_script:
 script:
     - official-images/test/run.sh "$image"
     - test/run.sh "$image"
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
+      docker tag $image:latest ab1997/openvpn:$TRAVIS_BRANCH-arm64;
+      docker push ab1997/openvpn:$TRAVIS_BRANCH-arm64;
+      else
+      docker tag $image:latest ab1997/openvpn:$TRAVIS_BRANCH;
+      docker push ab1997/openvpn:$TRAVIS_BRANCH;
+      fi
 
 after_script:
     - docker images
